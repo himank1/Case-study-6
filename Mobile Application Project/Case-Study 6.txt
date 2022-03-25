@@ -1,0 +1,350 @@
+////////////////////////Mobile Management Application/////////////////////////////
+
+
+
+//////////////////////////MobileManagementApplication.java///////////////////////////////
+
+
+package com.mobile;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication // same as @Configuration @EnableAutoConfiguration @ComponentScan
+public class MobileManagementApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(MobileManagementApplication.class, args);
+	}
+
+}
+
+
+///////////////////////////MobileManagementApplicationTests.java/////////////////////////////////
+
+
+package com.mobile;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class MobileManagementApplicationTests {
+
+	@Test
+	void contextLoads() {
+	}
+
+}
+
+
+
+//////////////////////////////////Mobile.java(entity class)//////////////////////////////////////////
+
+
+
+package com.mobile.entity;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="mobileApp")
+public class Mobile {
+	@Id
+	@Column(name="mobileId",length=15)
+	private int mobileId;
+	@Column(name="mobileName",length=15)
+	private String mobileName;
+	@Column(name="mobileType",length=15)
+	private String mobileType;
+	@Column(name="mobilePrice",length=10)
+	private int mobilePrice;
+	@Column(name="mobileWarranty",length=10)
+	private String mobileWarranty;
+	@Column(name="mobileIMEI",length=15)
+	private int mobileIMEI;
+	public int getMobileId() {
+		return mobileId;
+	}
+	public void setMobileId(int mobileId) {
+		this.mobileId = mobileId;
+	}
+	public String getMobileName() {
+		return mobileName;
+	}
+	public void setMobileName(String mobileName) {
+		this.mobileName = mobileName;
+	}
+	public String getMobileType() {
+		return mobileType;
+	}
+	public void setMobileType(String mobileType) {
+		this.mobileType = mobileType;
+	}
+	public int getMobilePrice() {
+		return mobilePrice;
+	}
+	public void setMobilePrice(int mobilePrice) {
+		this.mobilePrice = mobilePrice;
+	}
+	public String getMobileWarranty() {
+		return mobileWarranty;
+	}
+	public void setMobileWarranty(String mobileWarranty) {
+		this.mobileWarranty = mobileWarranty;
+	}
+	public int getMobileIMEI() {
+		return mobileIMEI;
+	}
+	public void setMobileIMEI(int mobileIMEI) {
+		this.mobileIMEI = mobileIMEI;
+	}
+	public Mobile(int mobileId, String mobileName, String mobileType, int mobilePrice, String mobileWarranty,
+			int mobileIMEI) {
+		super();
+		this.mobileId = mobileId;
+		this.mobileName = mobileName;
+		this.mobileType = mobileType;
+		this.mobilePrice = mobilePrice;
+		this.mobileWarranty = mobileWarranty;
+		this.mobileIMEI = mobileIMEI;
+	}
+	@Override
+	public String toString() {
+		return "Mobile [mobileId=" + mobileId + ", mobileName=" + mobileName + ", mobileType=" + mobileType
+				+ ", mobilePrice=" + mobilePrice + ", mobileWarranty=" + mobileWarranty + ", mobileIMEI=" + mobileIMEI
+				+ "]";
+	}
+	
+	public Mobile() {
+		
+	}
+}
+
+
+//////////////////////////////////////////////MobileService(interface)//////////////////////////////////////
+
+
+
+package com.mobile.service;
+
+import java.util.Optional;
+import java.util.List;
+
+import com.mobile.entity.Mobile;
+
+public interface MobileService {
+	
+	Mobile addMobile(Mobile mobile);
+	Mobile updateMobile(Mobile mobile);
+	void deleteMobile(int mobileId);
+	Optional<Mobile> getMobile(int mobileId);
+	Iterable<Mobile> getAllMobile();
+
+}
+
+
+
+///////////////////////////////////////////MobileServiceImpl.java////////////////////////////////////////
+
+
+
+package com.mobile.service;
+
+import java.util.Optional;
+
+import javax.transaction.Transactional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.mobile.entity.Mobile;
+import com.mobile.dao.MobileDao;
+@Transactional
+@Service
+public class MobileServiceImpl implements MobileService{
+	
+	@Autowired
+	MobileDao dao;
+
+	@Override
+	public Mobile addMobile(Mobile mobile) {
+		
+		return dao.save(mobile);
+	}
+
+	@Override
+	public Mobile updateMobile(Mobile mobile) {
+		
+		return dao.save(mobile);
+	}
+
+	@Override
+	public void deleteMobile(int mobileId) {
+		
+		dao.deleteById(mobileId);
+	}
+
+	@Override
+	public Optional<Mobile> getMobile(int mobileId) {
+		
+		return dao.findById(mobileId);
+	}
+
+	@Override
+	public Iterable<Mobile> getAllMobile() {
+		
+		return dao.findAll();
+	}
+	
+	
+}
+
+
+
+///////////////////////////////////////MobileDao.java(interface)//////////////////////////////////////////////
+
+
+package com.mobile.dao;
+
+import org.springframework.data.repository.CrudRepository;
+
+import com.mobile.entity.Mobile;
+
+public interface MobileDao extends CrudRepository<Mobile, Integer>{
+
+}
+
+
+
+///////////////////////////////////////////MobileController.java///////////////////////////////////////////////
+
+
+
+package com.mobile.controller;
+
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.mobile.entity.Mobile;
+import com.mobile.service.MobileService;
+
+
+@RestController
+@RequestMapping("/mobile")
+public class MobileController {
+        @Autowired
+        MobileService service;
+        @PostMapping("/addMobile") // http://localhost:1234/mobile/addMobile
+        public Mobile addMobile(@RequestBody Mobile mob) {
+                return service.addMobile(mob);
+        }
+
+        @PutMapping("/updateMobile")// http://localhost:1234/mobile/updateMobile
+        public Mobile updateMobile(@RequestBody Mobile mob) {
+                return service.updateMobile(mob);
+        }
+
+        @GetMapping("/getMobile/{mobileId}") // http://localhost:1234/mobile/getMobile/mobileId
+        public Optional<Mobile> getMobile(@PathVariable("mobileId")int mobileId) {
+                return service.getMobile(mobileId);
+        }
+
+        @GetMapping("/getAllMobile")
+        public Iterable<Mobile> getAllMobile() {
+                return service.getAllMobile();
+        }
+
+        @DeleteMapping("/deleteMobile/{mobileId}")
+        public void deleteMobile(@PathVariable("mobileId")int mobileId) {
+                 service.deleteMobile(mobileId);
+        }
+}
+
+
+
+///////////////////////////////////////////////application.properties////////////////////////////////////////
+
+
+server.port=1234
+spring.datasource.url=jdbc:postgresql://localhost:5432/task
+spring.datasource.username=postgres
+spring.datasource.password=postgres
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+
+
+
+/////////////////////////////////////////////pom.xml/////////////////////////////////////////////////
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.6.5</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.mobile</groupId>
+	<artifactId>MobileManagementApplication</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>MobileManagementApplication</name>
+	<description>Demo project for Spring Boot</description>
+	<properties>
+		<java.version>1.8</java.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
